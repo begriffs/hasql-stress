@@ -1,16 +1,17 @@
 module Main where
 
-import Control.Monad (void)
+import Control.Monad (replicateM_, void)
 import Hasql.Connection
 import Hasql.Session
 import Hasql.Query
 
+import qualified Hasql.Pool as P
+
 main :: IO ()
 main = do
-  acquire "postgres://postgres@localhost:5432/demo1" >>= \case
-    Left err -> error $ show err
-    Right c ->
-      void $ run sess c
+  let atOnce = 10
+  pool <- P.acquire (atOnce, 0.5, "postgres://postgres@localhost:5432/demo1")
+  replicateM_ atOnce $ P.use pool sess
  where
   sess = do
     sql "begin isolation level read committed;"
