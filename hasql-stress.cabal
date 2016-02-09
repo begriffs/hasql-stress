@@ -20,6 +20,7 @@ executable hasql-stress
   build-depends:       base
                      , hasql
                      , hasql-pool
+                     , resource-pool
                      , random
                      , threads
                      , http-types

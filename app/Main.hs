@@ -1,27 +1,31 @@
 module Main where
 
 import Hasql.Connection
-import Hasql.Session hiding (run)
+import qualified Hasql.Session as H
 import Hasql.Query
 
+import Data.Pool
+
 import Network.Wai
-import Network.Wai.Handler.Warp
+import qualified Network.Wai.Handler.Warp as W
 import Network.HTTP.Types (status200)
 
-import qualified Hasql.Pool as P
-
 main = do
-  pool <- P.acquire (10, 0.5, "postgres://postgres@localhost:5432/demo1")
+  let dbUrl = "postgres://postgres@localhost:5432/demo1"
+  pool <- createPool (acquire dbUrl)
+            (either (const $ return ()) release) 1 1 10
 
   let port = 3000
   putStrLn $ "Listening on port " ++ show port
-  run port $ \_ respond -> do
-    P.use pool sess
+  W.run port $ \_ respond -> do
+    withResource pool $ \case
+      Left err -> error $ show err
+      Right c -> H.run sess c
     respond $ responseLBS status200 [] "."
 
  where
   sess = do
-    sql "begin isolation level read committed;"
-    sql "set local role 'j';"
-    sql "WITH pg_source AS (UPDATE \"public\".\"film\"  SET \"rating\"='1'::unknown  WHERE \"public\".\"film\".\"id\" = '1'::unknown ) SELECT '', 0, '', '';"
-    sql "commit;"
+    H.sql "begin isolation level read committed;"
+    H.sql "set local role 'j';"
+    H.sql "WITH pg_source AS (UPDATE \"public\".\"film\"  SET \"rating\"='1'::unknown  WHERE \"public\".\"film\".\"id\" = '1'::unknown ) SELECT '', 0, '', '';"
+    H.sql "commit;"
