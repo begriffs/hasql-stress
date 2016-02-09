@@ -22,6 +22,9 @@ executable hasql-stress
                      , hasql-pool
                      , random
                      , threads
+                     , http-types
+                     , wai
+                     , warp
   default-language:    Haskell2010
   default-extensions:  LambdaCase, OverloadedStrings
 
