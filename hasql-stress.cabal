@@ -20,6 +20,7 @@ executable hasql-stress
   build-depends:       base
                      , hasql
                      , hasql-pool
+                     , threads
   default-language:    Haskell2010
   default-extensions:  LambdaCase, OverloadedStrings
 
