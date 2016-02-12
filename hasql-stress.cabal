@@ -21,6 +21,7 @@ executable hasql-stress
                      , hasql
                      , hasql-pool
                      , random
+                     , time
                      , threads
                      , http-types
                      , wai
