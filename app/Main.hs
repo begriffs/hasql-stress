@@ -7,6 +7,8 @@ import Data.Monoid ((<>))
 import Hasql.Connection
 import Hasql.Query
 import Hasql.Transaction
+import qualified Hasql.Encoders as HE
+import qualified Hasql.Decoders as HD
 
 import System.Random (getStdRandom, randomR)
 
@@ -23,5 +25,5 @@ main = do
   TGroup.wait kids
 
  where
-  sess =
-    sql "WITH pg_source AS (UPDATE \"public\".\"film\"  SET \"rating\"='1'::unknown  WHERE \"public\".\"film\".\"id\" = '1'::unknown ) SELECT '', 0, '', '';"
+  sess = query () $
+    statement "SELECT * FROM fakefake;" HE.unit HD.unit True
